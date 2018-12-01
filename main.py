@@ -56,6 +56,7 @@ class SquareTable:
             output += ", ".join(str(self[x, y]) for y in range(group_size)) + "\n"
         return output
 
+
 class Group(SquareTable):
     I = 1
 
@@ -98,16 +99,20 @@ class Group(SquareTable):
 
         # Ones lead constraint
         trace_vars = self.get_trace()
-        for first, second in zip(trace_vars[:1], trace_vars[1:]):
+        for first, second in zip(trace_vars[:-1], trace_vars[1:]):
             print(first, second)
             both_identity = (first == self.I) and (second == self.I)
             identity_first = (first == self.I) and (second != self.I)
             neither_identity = (first != self.I) and (second != self.I)
             self._s.Add(both_identity or identity_first or neither_identity) 
 
+        for i, trace_var in enumerate(trace_vars[:-1]):
+            trace_element_ident = trace_var == self.I
+            permutation_on_adjacent = (self[i, i+1] == self.I) and (self[i+1,i] == self.I)
+            self._s.Add(trace_element_ident or permutation_on_adjacent)
+
     def get_solver(self):
         return self._s
-
 
 
 def solve_groups(g: Group):
@@ -133,6 +138,9 @@ def solve_groups(g: Group):
 
     return collector
 
+def is_isomorphic(g1: Group, g2: Group):
+    pass
+
 
 def print_solution(coll, solution_number, group):
     get_xy_value = lambda x, y: to_symbols(coll.Value(solution_number, g[x, y]))
@@ -146,7 +154,7 @@ def to_symbols(val: int) -> str:
         return "1"
     return chr(ord("a") + val - 2)
 
-group_size = 8
+group_size = 6
 g = Group(group_size)
 collector = solve_groups(g)
 
