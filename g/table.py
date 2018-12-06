@@ -17,9 +17,6 @@ class SquareTable:
     def empty(cls, size: int):
         return cls.filled_with(size, None)
 
-    def _initial_table_entry(self, x, y):
-        return None
-
     def _xy_iterator(self):
         return itertools.product(range(self._size), range(self._size))
 
